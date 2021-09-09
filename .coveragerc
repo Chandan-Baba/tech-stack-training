@@ -1,0 +1,6 @@
+[run]
+omit = cccat/gunicorn_config.py
+data_file = /tmp/.cccat.coverage
+
+[xml]
+output = /tmp/.cccat.coverage.xml
