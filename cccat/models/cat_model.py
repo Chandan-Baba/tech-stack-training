@@ -176,7 +176,7 @@ def partial_update_cat_metadata(
     partial_update: dto.PartialUpdateCat,
 ) -> dto.PartialUpdateCat:
 
-    collection = get_collection(_COLLECTION_NAME)
+    collection = await get_collection(_COLLECTION_NAME)
     # import pdb
 
     # pdb.set_trace()
