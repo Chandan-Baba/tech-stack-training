@@ -95,8 +95,10 @@ class CatSummary(BaseModel):
 
 
 class PartialUpdateCat(BaseModel):
-    # name: Optional[str]
-    url: Optional[str]
+    name: Optional[str]
+    ctime: Optional[datetime]
+    mtime: Optional[datetime]
+    url: Optional[str] = "http://placekitten.com/200/300"
 
 
 class CatFilter(BaseModel):
@@ -123,6 +125,6 @@ class ListResponse(GenericModel, Generic[ResponseT]):
     metadata: PageMetadata
 
 
-class BulkUpdateResult(BaseModel):
+class UpdateResult(BaseModel):
     matched_count: int
     modified_count: int

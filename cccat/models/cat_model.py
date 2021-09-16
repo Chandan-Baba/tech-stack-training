@@ -174,13 +174,13 @@ def cat_summary_from_bson(cat: BSONDocument) -> dto.CatSummary:
 async def partial_update_cat_metadata(
     cat_id: dto.CatID,
     partial_update: dto.PartialUpdateCat,
-) -> dto.PartialUpdateCat:
+) -> dto.UpdateResult:
 
     collection = await get_collection(_COLLECTION_NAME)
 
     update = {"$set": {"url": partial_update.url}}
-    results = await collection.update_many({"cat_id": str(cat_id)}, update)
-    # print(results)
 
-    ##TODO here is asyncio throwing error.
-    return dto.PartialUpdateCat(url=results.url)
+    results = await collection.update_one({"cat_id": str(cat_id)}, update)
+    return dto.UpdateResult(
+        modified_count=results.modified_count, matched_count=results.matched_count
+    )

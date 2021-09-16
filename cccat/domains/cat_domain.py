@@ -36,7 +36,7 @@ async def find_many(
 
 async def partial_update_cat_metadata(
     cat_id: dto.CatID, partial_update: dto.PartialUpdateCat
-) -> dto.PartialUpdateCat:
+) -> dto.UpdateResult:
     result = await cat_model.partial_update_cat_metadata(
         cat_id=cat_id,
         partial_update=partial_update,

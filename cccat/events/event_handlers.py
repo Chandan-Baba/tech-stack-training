@@ -27,7 +27,8 @@ def handle_ping(data: dto.JSON) -> None:
 def handle_cat_created(data: dto.JSON) -> None:
     event_id = data.get("event_id")
     cat_id = data.get("cat_id")
-    required_keys = {"cat_id"}
+    partial_update_cat = data.get("partial_update_cat")
+    required_keys = {"cat_id", "partial_update_cat"}
 
     if not all(key in data for key in required_keys):
         exception_message = (
@@ -41,7 +42,17 @@ def handle_cat_created(data: dto.JSON) -> None:
     # TODO: Handle the async postprocessing of a created Cat here.
 
     dto_cat_id = dto.CatID(str(cat_id))
-    partial_update = dto.PartialUpdateCat(url="http://placekitten.com/200/300")
+
+    # partial_update = dto.PartialUpdateCat(url="http://placekitten.com/200/300")
+
+    try:
+        partial_update = dto.PartialUpdateCat.parse_obj(partial_update_cat)
+    except ValueError:
+        exception_message = (
+            f"Cannot process event: invalid partial update. Got: {partial_update_cat}"
+        )
+        logger.exception(f"[{event_id}] {exception_message}")
+        raise EventException(exception_message)
 
     loop = asyncio.get_event_loop()
     coroutine = cat_domain.partial_update_cat_metadata(

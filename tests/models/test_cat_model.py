@@ -297,3 +297,36 @@ async def test_find_many(
     )
 
     assert found_cat_summaries == expected_cat_summaries
+
+
+@pytest.mark.parametrize(
+    "existing_cat_documents, cat_url, expected_cat, cat_id",
+    [
+        (
+            [
+                {
+                    "_id": ObjectId("000000000000000000000101"),
+                    "name": "Sammybridge Cat",
+                    "ctime": datetime(2020, 1, 1, 0, 0, tzinfo=UTC),
+                    "mtime": datetime(2020, 1, 1, 0, 0, tzinfo=UTC),
+                },
+            ],
+            dto.PartialUpdateCat(
+                url="http://placekitten.com/200/300",
+            ),
+            dto.UpdateResult(matched_count=0, modified_count=0),
+            dto.CatID("000000000000000000000101"),
+        ),
+    ],
+)
+@conftest.async_test
+async def test_partial_update_cat(
+    existing_cat_documents: List[BSONDocument],
+    cat_url: dto.PartialUpdateCat,
+    expected_cat: dto.UpdateResult,
+    cat_id: dto.CatID,
+) -> None:
+    collection = await get_collection(cat_model._COLLECTION_NAME)
+    await collection.insert_many(existing_cat_documents)
+    result = await cat_model.partial_update_cat_metadata(cat_id, cat_url)
+    assert result == expected_cat
