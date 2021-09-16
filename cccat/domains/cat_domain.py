@@ -5,7 +5,11 @@ from cccat import dto
 from cccat.libs import dates
 from cccat.models import cat_model
 
+# from cccat.models.common import get_collection
+
 logger = logging.getLogger(__name__)
+
+_COLLECTION_NAME = "cats"
 
 
 async def create_cat(new_cat: dto.UnsavedCat) -> dto.Cat:
@@ -28,3 +32,13 @@ async def find_many(
         page=page,
     )
     return results
+
+
+async def partial_update_cat_metadata(
+    cat_id: dto.CatID, partial_update: dto.PartialUpdateCat
+) -> dto.BulkUpdateResult:
+    result = await cat_model.partial_update_cat_metadata(
+        cat_id=cat_id,
+        partial_update=partial_update,
+    )
+    return result

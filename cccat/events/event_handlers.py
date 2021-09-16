@@ -1,7 +1,9 @@
+import asyncio
 import logging
 from typing import Callable, Mapping
 
 from cccat import dto
+from cccat.domains import cat_domain
 from cccat.exceptions import EventException
 
 logger = logging.getLogger(__name__)
@@ -37,6 +39,15 @@ def handle_cat_created(data: dto.JSON) -> None:
 
     logger.info(f"[{event_id}] Cat {cat_id} has been created")
     # TODO: Handle the async postprocessing of a created Cat here.
+
+    dto_cat_id = dto.CatID(str(cat_id))
+    partial_update = dto.PartialUpdateCat(url="http://placekitten.com/200/300")
+
+    loop = asyncio.get_event_loop()
+    coroutine = cat_domain.partial_update_cat_metadata(
+        cat_id=dto_cat_id, partial_update=partial_update
+    )
+    loop.run_until_complete(coroutine)
 
 
 EVENT_HANDLERS: Mapping[str, Callable] = {

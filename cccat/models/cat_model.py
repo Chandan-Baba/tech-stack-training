@@ -169,3 +169,23 @@ def cat_summary_from_bson(cat: BSONDocument) -> dto.CatSummary:
         id=bson_id_to_cat_id(cat["_id"]),
         **cat,
     )
+
+
+def partial_update_cat_metadata(
+    cat_id: dto.CatID,
+    partial_update: dto.PartialUpdateCat,
+) -> dto.BulkUpdateResult:
+
+    collection = get_collection(_COLLECTION_NAME)
+    # import pdb
+
+    # pdb.set_trace()
+
+    print("in model pu", partial_update.url)
+    update = {"$set": {"url": partial_update.url}}
+    results = collection.update_many({"cat_id": str(cat_id)}, update)
+    print(results)
+    return dto.BulkUpdateResult(
+        matched_count=results.matched_count,
+        modified_count=results.modified_count,
+    )
