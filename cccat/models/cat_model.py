@@ -35,6 +35,7 @@ async def create_cat(new_cat: dto.UnsavedCat, now: datetime) -> dto.Cat:
         raise DuplicateCatError(f"Cat with name {new_cat.name} already exists.")
     cat_id = bson_id_to_cat_id(result.inserted_id)
     logger.info(f"Successfully created Cat {cat_id} in Cccat")
+
     return dto.Cat(
         id=cat_id,
         **unsaved_cat_as_bson,
@@ -172,15 +173,18 @@ def cat_summary_from_bson(cat: BSONDocument) -> dto.CatSummary:
 
 
 async def partial_update_cat_metadata(
-    cat_id: dto.CatID,
-    partial_update: dto.PartialUpdateCat,
+    cat_id: dto.CatID, partial_update_cat: dto.PartialUpdateCat
 ) -> dto.UpdateResult:
 
     collection = await get_collection(_COLLECTION_NAME)
 
-    update = {"$set": {"url": partial_update.url}}
+    update = {"$set": {"url": partial_update_cat.url}}
 
     results = await collection.update_one({"cat_id": str(cat_id)}, update)
+    message = "Cat udpated successfully"
+
+    print(" [x] Sent %r" % message)
+
     return dto.UpdateResult(
         modified_count=results.modified_count, matched_count=results.matched_count
     )

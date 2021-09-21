@@ -95,9 +95,6 @@ class CatSummary(BaseModel):
 
 
 class PartialUpdateCat(BaseModel):
-    name: Optional[str]
-    ctime: Optional[datetime]
-    mtime: Optional[datetime]
     url: Optional[str] = "http://placekitten.com/200/300"
 
 
