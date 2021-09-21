@@ -8,7 +8,8 @@ import pymongo.errors
 from bson import ObjectId
 
 from cccat import config, dto
-from cccat.exceptions import DuplicateCatError, EmptyResultsFilter
+from cccat.events.cat_events import fire_handle_cat_created
+from cccat.exceptions import CatNotFoundError, DuplicateCatError, EmptyResultsFilter
 from cccat.models.common import (
     BSONDocument,
     _calculate_db_skip_value,
@@ -174,17 +175,19 @@ def cat_summary_from_bson(cat: BSONDocument) -> dto.CatSummary:
 
 async def partial_update_cat_metadata(
     cat_id: dto.CatID, partial_update_cat: dto.PartialUpdateCat
-) -> dto.UpdateResult:
+) -> Optional[dto.Cat]:
 
     collection = await get_collection(_COLLECTION_NAME)
 
     update = {"$set": {"url": partial_update_cat.url}}
-
-    results = await collection.update_one({"cat_id": str(cat_id)}, update)
+    query = {"_id": ObjectId(cat_id)}
+    print("here is query -------------->", query)
+    results = await collection.update_one(query, update)
+    print("here is 2 -------------->", results)
     message = "Cat udpated successfully"
-
+    if not results.matched_count:
+        raise CatNotFoundError(f"Cat{cat_id} did not found")
     print(" [x] Sent %r" % message)
-
-    return dto.UpdateResult(
-        modified_count=results.modified_count, matched_count=results.matched_count
-    )
+    updated_cat = await find_one(cat_filter=dto.CatFilter(cat_id=cat_id))
+    assert updated_cat is not None
+    return updated_cat

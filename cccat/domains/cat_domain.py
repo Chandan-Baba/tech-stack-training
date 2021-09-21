@@ -17,7 +17,6 @@ async def create_cat(new_cat: dto.UnsavedCat) -> dto.Cat:
     now = dates.get_utcnow()
     created_cat = await cat_model.create_cat(new_cat, now=now)
     partial_update_cat = dto.PartialUpdateCat(url="http://placekitten.com/200/300")
-    print("hii", partial_update_cat)
     fire_handle_cat_created(created_cat.id, partial_update_cat)
     return created_cat
 
@@ -41,9 +40,12 @@ async def find_many(
 
 async def partial_update_cat_metadata(
     cat_id: dto.CatID, partial_update_cat: dto.PartialUpdateCat
-) -> dto.UpdateResult:
+) -> Optional[dto.Cat]:
+    partial_update_cat = dto.PartialUpdateCat(url="http://placekitten.com/200/300")
+
     result = await cat_model.partial_update_cat_metadata(
         cat_id=cat_id,
         partial_update_cat=partial_update_cat,
     )
+    fire_handle_cat_created(result.cat_id, result.partial_update_cat)
     return result

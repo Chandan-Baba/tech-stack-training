@@ -73,9 +73,10 @@ services:
     volumes:
       - ".:/srv"
     networks:
+      internal:
       ai-dev-network:
         aliases:
-          - cccat-consumer
+          - cccat
     hostname: cccat-consumer
     command: ["poetry", "run", "python", "-m", "cccat.main", "consumer"]
     healthcheck:
