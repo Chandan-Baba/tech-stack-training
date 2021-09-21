@@ -76,6 +76,7 @@ services:
       ai-dev-network:
         aliases:
           - cccat-consumer
+      internal:
     hostname: cccat-consumer
     command: ["poetry", "run", "python", "-m", "cccat.main", "consumer"]
     healthcheck:

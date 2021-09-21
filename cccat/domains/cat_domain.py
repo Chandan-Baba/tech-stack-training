@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from cccat import dto
-from cccat.events.cat_events import fire_handle_cat_created
+from cccat.events.cat_events import fire_cat_created
 from cccat.libs import dates
 from cccat.models import cat_model
 
@@ -10,15 +10,11 @@ from cccat.models import cat_model
 
 logger = logging.getLogger(__name__)
 
-_COLLECTION_NAME = "cats"
-
 
 async def create_cat(new_cat: dto.UnsavedCat) -> dto.Cat:
     now = dates.get_utcnow()
     created_cat = await cat_model.create_cat(new_cat, now=now)
-    partial_update_cat = dto.PartialUpdateCat(url="http://placekitten.com/200/300")
-    print("hii", partial_update_cat)
-    fire_handle_cat_created(created_cat.id, partial_update_cat)
+    fire_cat_created(created_cat.id)
     return created_cat
 
 

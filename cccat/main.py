@@ -71,10 +71,6 @@ def init_event_consumer() -> EventConsumer:
     )
 
 
-def init_event_producer() -> EventProducer:
-    return EventProducer(environment_name=config.ENVIRONMENT, amqp_url=config.AMQP_URL)
-
-
 def include_routers(app: FastAPI) -> None:
     app.include_router(status_view.router)
     app.include_router(cat_view.router, prefix="/v1")
@@ -130,14 +126,6 @@ if __name__ == "__main__":
 
         event_consumer = init_event_consumer()
         event_consumer.run()
-
-    elif args[0] == "producer":
-        if not config.ENABLE_AMQP:
-            logger.warning("AMQP is not enabled, producer will not start")
-            sys.exit(0)
-
-        event_prodcuer = init_event_producer()
-        event_prodcuer.run()
 
     elif args[0] == "consumer-healthcheck":
         if not config.ENABLE_AMQP:
