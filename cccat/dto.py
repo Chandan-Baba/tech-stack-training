@@ -95,7 +95,7 @@ class CatSummary(BaseModel):
 
 
 class PartialUpdateCat(BaseModel):
-    name: Optional[str]
+    url: Optional[str]
 
 
 class CatFilter(BaseModel):
@@ -120,3 +120,8 @@ class StatusViewResponse(BaseModel):
 class ListResponse(GenericModel, Generic[ResponseT]):
     results: List[ResponseT]
     metadata: PageMetadata
+
+
+class UpdateResult(BaseModel):
+    matched_count: int
+    modified_count: int

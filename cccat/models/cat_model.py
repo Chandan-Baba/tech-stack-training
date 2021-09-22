@@ -8,7 +8,7 @@ import pymongo.errors
 from bson import ObjectId
 
 from cccat import config, dto
-from cccat.exceptions import DuplicateCatError, EmptyResultsFilter
+from cccat.exceptions import CatNotFoundError, DuplicateCatError, EmptyResultsFilter
 from cccat.models.common import (
     BSONDocument,
     _calculate_db_skip_value,
@@ -35,6 +35,7 @@ async def create_cat(new_cat: dto.UnsavedCat, now: datetime) -> dto.Cat:
         raise DuplicateCatError(f"Cat with name {new_cat.name} already exists.")
     cat_id = bson_id_to_cat_id(result.inserted_id)
     logger.info(f"Successfully created Cat {cat_id} in Cccat")
+
     return dto.Cat(
         id=cat_id,
         **unsaved_cat_as_bson,
@@ -169,3 +170,23 @@ def cat_summary_from_bson(cat: BSONDocument) -> dto.CatSummary:
         id=bson_id_to_cat_id(cat["_id"]),
         **cat,
     )
+
+
+async def partial_update_cat_metadata(
+    cat_id: dto.CatID, partial_update_cat: dto.PartialUpdateCat
+) -> Optional[dto.Cat]:
+
+    collection = await get_collection(_COLLECTION_NAME)
+
+    update = {"$set": {"url": partial_update_cat.url}}
+    query = {"_id": ObjectId(cat_id)}
+    print("here is query -------------->", query)
+    results = await collection.update_one(query, update)
+    print("here is 2 -------------->", results)
+    message = "Cat udpated successfully"
+    if not results.matched_count:
+        raise CatNotFoundError(f"Cat{cat_id} did not found")
+    print(" [x] Sent %r" % message)
+    updated_cat = await find_one(cat_filter=dto.CatFilter(cat_id=cat_id))
+    assert updated_cat is not None
+    return updated_cat

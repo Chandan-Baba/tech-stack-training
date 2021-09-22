@@ -1,4 +1,8 @@
+from bson.json_util import dumps
+
+from cccat import dto
 from cccat.events import common
+from cccat.models.common import BSONDocument
 
 
 def fire_cat_created(cat_id: str) -> None:

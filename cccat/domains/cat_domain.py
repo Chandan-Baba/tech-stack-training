@@ -2,15 +2,22 @@ import logging
 from typing import Optional
 
 from cccat import dto
+from cccat.events.cat_events import fire_cat_created
 from cccat.libs import dates
 from cccat.models import cat_model
 
+# from cccat.models.common import get_collection
+
 logger = logging.getLogger(__name__)
+
+_COLLECTION_NAME = "cats"
 
 
 async def create_cat(new_cat: dto.UnsavedCat) -> dto.Cat:
     now = dates.get_utcnow()
-    return await cat_model.create_cat(new_cat, now=now)
+    created_cat = await cat_model.create_cat(new_cat, now=now)
+    fire_cat_created(created_cat.id)
+    return created_cat
 
 
 async def find_one(cat_filter: dto.CatFilter) -> Optional[dto.Cat]:
@@ -28,3 +35,14 @@ async def find_many(
         page=page,
     )
     return results
+
+
+async def partial_update_cat_metadata(
+    cat_id: dto.CatID, partial_update_cat: dto.PartialUpdateCat
+) -> Optional[dto.Cat]:
+    result = await cat_model.partial_update_cat_metadata(
+        cat_id=cat_id,
+        partial_update_cat=partial_update_cat,
+    )
+
+    return result

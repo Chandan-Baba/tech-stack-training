@@ -6,6 +6,7 @@ import sentry_sdk
 import uvicorn  # type: ignore
 from ai_event_pubsub.consumer import EventConsumer
 from ai_event_pubsub.healthcheck import run_healthcheck
+from ai_event_pubsub.producer import EventProducer
 from elasticapm.contrib.starlette import ElasticAPM, make_apm_client  # type: ignore
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -68,6 +69,10 @@ def init_event_consumer() -> EventConsumer:
         amqp_url=config.AMQP_URL,
         event_handler_map=EVENT_HANDLERS,
     )
+
+
+def init_event_producer() -> EventProducer:
+    return EventProducer(environment_name=config.ENVIRONMENT, amqp_url=config.AMQP_URL)
 
 
 def include_routers(app: FastAPI) -> None:
