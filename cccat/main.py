@@ -131,14 +131,6 @@ if __name__ == "__main__":
         event_consumer = init_event_consumer()
         event_consumer.run()
 
-    elif args[0] == "producer":
-        if not config.ENABLE_AMQP:
-            logger.warning("AMQP is not enabled, producer will not start")
-            sys.exit(0)
-
-        event_prodcuer = init_event_producer()
-        event_prodcuer.run()
-
     elif args[0] == "consumer-healthcheck":
         if not config.ENABLE_AMQP:
             logger.warning("AMQP is not enabled, consumer-healthcheck will not start")

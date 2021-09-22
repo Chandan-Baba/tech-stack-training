@@ -8,7 +8,6 @@ import pymongo.errors
 from bson import ObjectId
 
 from cccat import config, dto
-from cccat.events.cat_events import fire_handle_cat_created
 from cccat.exceptions import CatNotFoundError, DuplicateCatError, EmptyResultsFilter
 from cccat.models.common import (
     BSONDocument,

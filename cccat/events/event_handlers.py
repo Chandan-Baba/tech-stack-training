@@ -62,6 +62,6 @@ def handle_cat_created(data: dto.JSON) -> None:
 EVENT_HANDLERS: Mapping[str, Callable] = {
     "ping": handle_ping,
     "cccat-ping": handle_ping,
-    # "cat.created": handle_cat_created,
-    "cat.handle_cat_created": handle_cat_created,
+    "cat.created": handle_cat_created,
+    # "cat.handle_cat_created": handle_cat_created,
 }
